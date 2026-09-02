@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<title>Fichário</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+
+  :root {
+    --wood: #241C15;
+    --wood2: #2E241A;
+    --paper: #F1EAD6;
+    --paper2: #E9E0C8;
+    --ink: #2A2118;
+    --green: #5C7A5A;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: var(--wood);
+    color: var(--paper);
+    padding: 40px 24px 64px;
+  }
+  .display { font-family: 'Fraunces', serif; }
+
+  /* ---------- HOME ---------- */
+  .home-header { max-width: 920px; margin: 0 auto 40px; }
+  .home-header h1 { font-size: clamp(2.4rem, 6vw, 3.6rem); margin: 0 0 10px; font-weight: 600; letter-spacing: -0.01em; }
+  .home-header p { font-size: 1.05rem; color: #D8CDB2; max-width: 480px; line-height: 1.5; margin: 0; }
+
+  .grid { max-width: 920px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  @media (max-width: 760px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 480px) { .grid { grid-template-columns: 1fr; } }
+
+  .card {
+    position: relative;
+    background: var(--paper);
+    border-radius: 3px;
+    padding: 26px 20px 22px;
+    cursor: pointer;
+    color: var(--ink);
+    transition: transform 160ms ease;
+    box-shadow: 0 10px 0 -6px rgba(0,0,0,0.25), 0 2px 6px rgba(0,0,0,0.35);
+  }
+  .card:hover { transform: translateY(-4px); }
+  .card .tab {
+    position: absolute; top: -12px; left: 18px;
+    padding: 3px 12px; border-radius: 2px;
+    font-family: 'Fraunces', serif; font-weight: 600; font-size: 0.72rem;
+    color: #fff;
+  }
+  .card .icon-row { margin-top: 10px; margin-bottom: 22px; font-size: 1.6rem; }
+  .card h3 { font-family: 'Fraunces', serif; font-size: 1.3rem; margin: 0 0 6px; font-weight: 600; }
+  .card p { margin: 0; font-size: 0.85rem; color: #5a5142; }
+  .card .status { position: absolute; bottom: 14px; right: 16px; font-size: 0.68rem; color: #8a7f68; }
+
+  /* ---------- BIOLOGIA VIEW ---------- */
+  .top-nav { max-width: 1100px; margin: 0 auto 22px; }
+  .back-link { background: none; border: none; color: #D8CDB2; font-family: 'IBM Plex Sans'; font-size: 0.85rem; cursor: pointer; padding: 0; }
+  .back-link:hover { color: #fff; }
+
+  .breadcrumbs { max-width: 1100px; margin: 0 auto 20px; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  .crumb { background: none; border: none; color: var(--paper); font-family: 'Fraunces', serif; font-size: 1.15rem; cursor: pointer; padding: 0; }
+  .crumb-sep { color: #6b5f4a; }
+
+  .layout { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 340px 1fr; gap: 20px; align-items: start; }
+  @media (max-width: 860px) { .layout { grid-template-columns: 1fr; } }
+
+  .panel { background: var(--paper); color: var(--ink); border-radius: 4px; padding: 22px 22px 24px; }
+  .panel h4 { font-family: 'Fraunces', serif; font-size: 1rem; margin: 0 0 4px; font-weight: 600; color: #4a4030; }
+
+  .desc-box { margin-bottom: 18px; padding-bottom: 16px; border-bottom: 1px solid #d9cfb4; }
+  .desc-box textarea {
+    width: 100%; min-height: 70px; margin-top: 8px; resize: vertical;
+    font-family: 'IBM Plex Sans'; font-size: 0.87rem; line-height: 1.5;
+    padding: 8px 10px; border: 1px solid #cabe9c; border-radius: 3px;
+    background: #fbf8ee; color: #3a3225;
+  }
+  .desc-actions { display: flex; align-items: center; gap: 10px; margin-top: 6px; }
+  .save-btn {
+    background: var(--green); color: #fff; border: none; border-radius: 3px;
+    padding: 6px 14px; font-size: 0.78rem; cursor: pointer; font-family: 'IBM Plex Sans'; font-weight: 600;
+  }
+  .save-btn:hover { opacity: 0.9; }
+  .save-status { font-size: 0.75rem; color: #6d8f6a; }
+
+  .index-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+  .index-list li button {
+    width: 100%; text-align: left; background: none; border: none; cursor: pointer;
+    padding: 9px 10px; border-radius: 3px; font-family: 'IBM Plex Sans'; font-size: 0.9rem; color: #3a3225;
+  }
+  .index-list li button:hover { background: var(--paper2); }
+  .index-list li button.active { background: var(--green); color: #fff; font-weight: 600; }
+
+  .tree-panel { background: var(--wood2); border-radius: 4px; padding: 26px 18px; overflow-x: auto; }
+  .tree-caption { text-align: center; font-size: 0.72rem; color: #9c8f74; margin-top: 6px; }
+
+  .tree, .tree ul { list-style: none; margin: 0; padding: 0; position: relative; }
+  .tree { text-align: center; padding-top: 6px; }
+  .tree ul { padding-top: 26px; }
+  .tree li { display: inline-block; vertical-align: top; padding: 26px 10px 0; position: relative; }
+  .tree li::before, .tree li::after {
+    content: ''; position: absolute; top: 0; right: 50%; border-top: 1px solid #55492f; width: 50%; height: 26px;
+  }
+  .tree li::after { right: auto; left: 50%; border-left: 1px solid #55492f; }
+  .tree li:only-child::after, .tree li:only-child::before { display: none; }
+  .tree li:only-child { padding-top: 0; }
+  .tree li:first-child::before, .tree li:last-child::after { border: 0 none; }
+  .tree li:last-child::before { border-right: 1px solid #55492f; border-radius: 0 4px 0 0; }
+  .tree li:first-child::after { border-radius: 4px 0 0 0; }
+  .tree ul::before {
+    content: ''; position: absolute; top: 0; left: 50%; border-left: 1px solid #55492f; width: 0; height: 26px;
+  }
+
+  .node {
+    display: inline-block; font-family: 'Fraunces', serif; color: #C7BBA0; cursor: pointer;
+    padding: 6px 12px; border-radius: 3px; white-space: nowrap; transition: opacity 140ms ease;
+  }
+  .node:hover { color: #fff; }
+  .node-active { background: var(--green); color: #fff; font-weight: 600; }
+  .node-dim { opacity: 0.55; }
+  .root-node { font-weight: 700; color: #fff; font-size: 1.15rem; padding-bottom: 4px; cursor: pointer; }
+
+  /* ---------- PLACEHOLDER ---------- */
+  .placeholder-box { max-width: 640px; margin: 60px auto; text-align: center; color: #D8CDB2; }
+  .placeholder-box h2 { font-family: 'Fraunces', serif; font-size: 2rem; margin-bottom: 10px; }
+</style>
+</head>
+<body>
+
+<div id="app"></div>
+
+<script>
+/* =========================================================
+   1) DADOS
+   Cada matéria é um objeto. A Biologia tem 3 níveis:
+   tema -> subtema -> conceito. Cada nível guarda um "id"
+   (usado como chave), um "nome" e uma "descricao" padrão
+   (que o usuário pode reescrever e salvar).
+   ========================================================= */
+
+const SUBJECTS = [
+  { id: "biologia",   nome: "Biologia",         tagline: "Da célula ao ecossistema",     cor: "#5C7A5A", emoji: "🌿", pronto: true },
+  { id: "matematica", nome: "Matemática",        tagline: "Do número à demonstração",     cor: "#5A6B94", emoji: "∑",  pronto: false },
+  { id: "portugues",  nome: "Português",         tagline: "Da gramática ao texto",        cor: "#8A4B54", emoji: "📖", pronto: false },
+  { id: "quimica",    nome: "Química",           tagline: "Do átomo à reação",            cor: "#4E8A82", emoji: "⚗️", pronto: false },
+  { id: "fisica",     nome: "Física",            tagline: "Do movimento à energia",       cor: "#4F6E86", emoji: "⚛️", pronto: false },
+  { id: "historia",   nome: "História",          tagline: "Do fato ao processo",          cor: "#9C7A42", emoji: "🏛️", pronto: false },
+  { id: "geografia",  nome: "Geografia",         tagline: "Do lugar ao território",       cor: "#A15A3E", emoji: "🌍", pronto: false },
+];
+
+const BIOLOGIA_ROOT = {
+  id: "biologia",
+  nome: "Biologia",
+  descricao: "Estudo dos seres vivos: sua origem, estrutura, funcionamento e relações com o ambiente."
+};
+
+const BIOLOGIA = [
+  {
+    id: "citologia", nome: "Citologia",
+    descricao: "Estudo da célula, sua estrutura, organelas e funcionamento como unidade básica da vida.",
+    subtemas: [
+      { id: "membrana", nome: "Membrana plasmática", descricao: "Estrutura que envolve a célula e controla a entrada e saída de substâncias.",
+        conceitos: [
+          { id: "transporte-passivo", nome: "Transporte passivo", descricao: "Movimento de substâncias a favor do gradiente de concentração, sem gasto de energia." },
+          { id: "transporte-ativo", nome: "Transporte ativo", descricao: "Movimento contra o gradiente de concentração, com gasto de ATP." },
+          { id: "mosaico-fluido", nome: "Modelo do mosaico fluido", descricao: "Descreve a membrana como uma bicamada lipídica fluida com proteínas móveis." },
+        ]},
+      { id: "organelas", nome: "Organelas citoplasmáticas", descricao: "Estruturas internas da célula, cada uma com uma função especializada.",
+        conceitos: [
+          { id: "mitocondria", nome: "Mitocôndria", descricao: "Responsável pela respiração celular e produção de ATP." },
+          { id: "reticulo", nome: "Retículo endoplasmático", descricao: "Liso: síntese de lipídios. Rugoso: síntese de proteínas." },
+          { id: "golgi", nome: "Complexo de Golgi", descricao: "Modifica, empacota e distribui proteínas e lipídios." },
+        ]},
+      { id: "nucleo", nome: "Núcleo celular", descricao: "Estrutura que guarda e protege o material genético da célula.",
+        conceitos: [
+          { id: "cromatina", nome: "Cromatina e cromossomos", descricao: "Formas de organização do DNA, condensado em cromossomos na divisão celular." },
+          { id: "nucleolo", nome: "Nucléolo", descricao: "Região do núcleo onde são produzidos os ribossomos." },
+        ]},
+      { id: "divisao", nome: "Divisão celular", descricao: "Processos pelos quais uma célula se multiplica em novas células.",
+        conceitos: [
+          { id: "mitose", nome: "Mitose", descricao: "Origina duas células-filhas geneticamente idênticas à célula-mãe." },
+          { id: "meiose", nome: "Meiose", descricao: "Reduz o número de cromossomos à metade, formando os gametas." },
+        ]},
+    ]},
+  {
+    id: "genetica", nome: "Genética",
+    descricao: "Estudo de como as características são herdadas e transmitidas entre gerações.",
+    subtemas: [
+      { id: "mendel", nome: "Leis de Mendel", descricao: "Princípios básicos que explicam como as características são herdadas.",
+        conceitos: [
+          { id: "primeira-lei", nome: "1ª Lei de Mendel", descricao: "Lei da segregação: cada característica é determinada por um par de genes que se separam nos gametas." },
+          { id: "segunda-lei", nome: "2ª Lei de Mendel", descricao: "Lei da segregação independente: genes de características diferentes se distribuem de forma independente." },
+        ]},
+      { id: "populacoes", nome: "Genética de populações", descricao: "Estudo de como os genes se distribuem dentro de uma população.",
+        conceitos: [
+          { id: "hardy-weinberg", nome: "Equilíbrio de Hardy-Weinberg", descricao: "Modelo que descreve a estabilidade das frequências alélicas numa população." },
+        ]},
+      { id: "biotecnologia", nome: "Biotecnologia", descricao: "Técnicas que usam organismos ou seus componentes para criar produtos e tecnologias.",
+        conceitos: [
+          { id: "engenharia-genetica", nome: "Engenharia genética", descricao: "Técnicas que manipulam diretamente o DNA de um organismo." },
+          { id: "transgenicos", nome: "Organismos transgênicos", descricao: "Organismos com genoma alterado pela inserção de genes de outra espécie." },
+        ]},
+      { id: "heranca-sexo", nome: "Herança ligada ao sexo", descricao: "Genes localizados nos cromossomos sexuais e como isso afeta a herança.",
+        conceitos: [
+          { id: "daltonismo", nome: "Daltonismo e hemofilia", descricao: "Exemplos clássicos de herança recessiva ligada ao cromossomo X." },
+        ]},
+    ]},
+  {
+    id: "botanica", nome: "Botânica",
+    descricao: "Estudo das plantas: sua estrutura, fisiologia, classificação e reprodução.",
+    subtemas: [
+      { id: "morfologia", nome: "Morfologia vegetal", descricao: "Estudo dos órgãos que formam o corpo das plantas.",
+        conceitos: [
+          { id: "raiz-caule-folha", nome: "Raiz, caule e folha", descricao: "Órgãos vegetativos: fixação/absorção, sustentação/condução e fotossíntese/transpiração." },
+        ]},
+      { id: "fisiologia-vegetal", nome: "Fisiologia vegetal", descricao: "Estudo do funcionamento interno das plantas.",
+        conceitos: [
+          { id: "fotossintese", nome: "Fotossíntese", descricao: "Conversão de luz solar, água e CO₂ em glicose e oxigênio." },
+          { id: "transporte-seiva", nome: "Transporte de seiva", descricao: "Seiva bruta sobe pelo xilema; seiva elaborada é distribuída pelo floema." },
+        ]},
+      { id: "classificacao-plantas", nome: "Classificação das plantas", descricao: "Como as plantas são agrupadas de acordo com suas características.",
+        conceitos: [
+          { id: "briofitas-pteridofitas", nome: "Briófitas e pteridófitas", descricao: "Plantas sem sementes, dependentes de água para reprodução." },
+          { id: "gimno-angio", nome: "Gimnospermas e angiospermas", descricao: "Plantas com sementes; angiospermas também produzem frutos e flores." },
+        ]},
+      { id: "reproducao-vegetal", nome: "Reprodução vegetal", descricao: "Como as plantas se reproduzem e originam novos indivíduos.",
+        conceitos: [
+          { id: "polinizacao", nome: "Polinização e fecundação", descricao: "Transferência do pólen até o óvulo, originando a semente." },
+        ]},
+    ]},
+  {
+    id: "zoologia", nome: "Zoologia",
+    descricao: "Estudo dos animais, sua diversidade, classificação e fisiologia.",
+    subtemas: [
+      { id: "invertebrados", nome: "Invertebrados", descricao: "Animais sem coluna vertebral.",
+        conceitos: [
+          { id: "poriferos-cnidarios", nome: "Poríferos e cnidários", descricao: "Animais aquáticos simples, sem tecidos verdadeiros ou com simetria radial." },
+          { id: "artropodes", nome: "Artrópodes", descricao: "Maior filo animal, com exoesqueleto de quitina e corpo segmentado." },
+        ]},
+      { id: "vertebrados", nome: "Vertebrados", descricao: "Animais com coluna vertebral.",
+        conceitos: [
+          { id: "peixes-anfibios", nome: "Peixes e anfíbios", descricao: "Vertebrados aquáticos ou de dupla vida." },
+          { id: "repteis-aves-mamiferos", nome: "Répteis, aves e mamíferos", descricao: "Vertebrados amniotas terrestres, com diferentes estratégias reprodutivas." },
+        ]},
+      { id: "fisiologia-animal", nome: "Fisiologia animal", descricao: "Estudo do funcionamento dos sistemas dos animais.",
+        conceitos: [
+          { id: "respiracao-animal", nome: "Sistemas respiratórios", descricao: "Estratégias de troca gasosa: brânquias, traqueias, pulmões, pele." },
+        ]},
+      { id: "filogenia-animal", nome: "Filogenia animal", descricao: "Estudo das relações evolutivas entre os grupos de animais.",
+        conceitos: [
+          { id: "arvore-filogenetica", nome: "Árvores filogenéticas", descricao: "Diagramas que representam o parentesco evolutivo entre espécies." },
+        ]},
+    ]},
+  {
+    id: "ecologia", nome: "Ecologia",
+    descricao: "Estudo das relações entre os seres vivos e destes com o ambiente.",
+    subtemas: [
+      { id: "relacoes-ecologicas", nome: "Relações ecológicas", descricao: "Formas como diferentes espécies interagem entre si.",
+        conceitos: [
+          { id: "predatismo-competicao", nome: "Predatismo e competição", descricao: "Interações desarmônicas, com efeito negativo para ao menos uma espécie." },
+          { id: "mutualismo-comensalismo", nome: "Mutualismo e comensalismo", descricao: "Interações harmônicas entre espécies." },
+        ]},
+      { id: "ciclos-biogeoquimicos", nome: "Ciclos biogeoquímicos", descricao: "Circulação de elementos químicos entre seres vivos e o ambiente.",
+        conceitos: [
+          { id: "ciclo-carbono", nome: "Ciclo do carbono", descricao: "Circulação do carbono entre atmosfera, seres vivos, oceanos e solo." },
+          { id: "ciclo-nitrogenio", nome: "Ciclo do nitrogênio", descricao: "Passagem do nitrogênio pela atmosfera, solo e seres vivos." },
+        ]},
+      { id: "biomas", nome: "Biomas e ecossistemas", descricao: "Grandes conjuntos de vegetação e clima característicos de uma região.",
+        conceitos: [
+          { id: "biomas-brasileiros", nome: "Biomas brasileiros", descricao: "Amazônia, Cerrado, Caatinga, Mata Atlântica, Pampa e Pantanal." },
+        ]},
+      { id: "impactos-ambientais", nome: "Impactos ambientais", descricao: "Efeitos da ação humana sobre o ambiente.",
+        conceitos: [
+          { id: "aquecimento-global", nome: "Aquecimento global", descricao: "Aumento da temperatura média do planeta pelo acúmulo de gases estufa." },
+        ]},
+    ]},
+  {
+    id: "fisiologia-humana", nome: "Fisiologia Humana",
+    descricao: "Estudo do funcionamento dos sistemas do corpo humano.",
+    subtemas: [
+      { id: "sistema-digestorio", nome: "Sistema digestório", descricao: "Conjunto de órgãos responsáveis por digerir e absorver os alimentos.",
+        conceitos: [
+          { id: "digestao", nome: "Digestão e absorção", descricao: "Quebra dos alimentos e absorção de nutrientes, principalmente no intestino delgado." },
+        ]},
+      { id: "sistema-circulatorio", nome: "Sistema circulatório", descricao: "Responsável por transportar sangue, oxigênio e nutrientes pelo corpo.",
+        conceitos: [
+          { id: "coracao", nome: "Coração e vasos sanguíneos", descricao: "Bomba muscular que impulsiona o sangue por artérias, veias e capilares." },
+        ]},
+      { id: "sistema-nervoso", nome: "Sistema nervoso", descricao: "Responsável por controlar e coordenar as funções do corpo.",
+        conceitos: [
+          { id: "neuronio", nome: "Neurônio e impulso nervoso", descricao: "Unidade funcional do sistema nervoso, que conduz sinais elétricos e químicos." },
+        ]},
+      { id: "sistema-endocrino", nome: "Sistema endócrino", descricao: "Conjunto de glândulas que regulam o corpo por meio de hormônios.",
+        conceitos: [
+          { id: "hormonios", nome: "Glândulas e hormônios", descricao: "Substâncias que regulam funções do corpo à distância." },
+        ]},
+    ]},
+  {
+    id: "evolucao", nome: "Evolução",
+    descricao: "Estudo dos processos que explicam a diversidade e a origem das espécies ao longo do tempo.",
+    subtemas: [
+      { id: "darwinismo", nome: "Darwinismo e neodarwinismo", descricao: "Teorias que explicam a evolução das espécies pela seleção natural.",
+        conceitos: [
+          { id: "selecao-natural", nome: "Seleção natural", descricao: "Indivíduos mais adaptados ao ambiente têm maior chance de sobreviver e se reproduzir." },
+        ]},
+      { id: "evidencias", nome: "Evidências evolutivas", descricao: "Provas que sustentam a teoria da evolução.",
+        conceitos: [
+          { id: "fosseis-orgaos", nome: "Fósseis e órgãos homólogos", descricao: "Registros e estruturas que comprovam o parentesco evolutivo entre espécies." },
+        ]},
+      { id: "especiacao", nome: "Especiação", descricao: "Processo de formação de novas espécies.",
+        conceitos: [
+          { id: "isolamento-reprodutivo", nome: "Isolamento reprodutivo", descricao: "Impede o cruzamento entre populações, levando à formação de novas espécies." },
+        ]},
+      { id: "origem-vida", nome: "Origem da vida", descricao: "Hipóteses sobre como surgiram os primeiros seres vivos.",
+        conceitos: [
+          { id: "hipoteses-origem", nome: "Hipóteses sobre a origem da vida", descricao: "Teorias como a abiogênese e a panspermia." },
+        ]},
+    ]},
+];
+
+/* =========================================================
+   2) ESTADO (variáveis simples, sem framework nenhum)
+   ========================================================= */
+let view = "home";       // "home" | "biologia" | "placeholder"
+let placeholderSubject = null;
+let temaId = null;
+let subtemaId = null;
+let conceitoId = null;
+
+const app = document.getElementById("app");
+
+/* =========================================================
+   3) ARMAZENAMENTO (salva as descrições que você escrever)
+   window.storage é fornecido pelo ambiente do artifact.
+   ========================================================= */
+async function getDescricaoSalva(chave) {
+  if (typeof window.storage === "undefined") return null;
+  try {
+    const resultado = await window.storage.get(chave, false); // false = dado pessoal
+    return resultado ? resultado.value : null;
+  } catch (erro) {
+    return null; // chave ainda não existe
+  }
+}
+async function salvarDescricao(chave, texto) {
+  if (typeof window.storage === "undefined") return false;
+  try {
+    await window.storage.set(chave, texto, false);
+    return true;
+  } catch (erro) {
+    return false;
+  }
+}
+
+/* =========================================================
+   4) FUNÇÕES DE NAVEGAÇÃO
+   ========================================================= */
+function abrirMateria(materia) {
+  if (materia.id === "biologia") {
+    view = "biologia";
+  } else {
+    placeholderSubject = materia;
+    view = "placeholder";
+  }
+  render();
+}
+function irParaHome() {
+  view = "home";
+  temaId = null; subtemaId = null; conceitoId = null;
+  render();
+}
+function escolherTema(id) {
+  temaId = (temaId === id) ? null : id;
+  subtemaId = null; conceitoId = null;
+  render();
+}
+function escolherSubtema(id) {
+  subtemaId = (subtemaId === id) ? null : id;
+  conceitoId = null;
+  render();
+}
+function escolherConceito(id) {
+  conceitoId = (conceitoId === id) ? null : id;
+  render();
+}
+
+/* =========================================================
+   5) DESCOBRIR O "NÓ ATUAL" (o nível que está sendo exibido)
+   ========================================================= */
+function getTema() { return BIOLOGIA.find(t => t.id === temaId) || null; }
+function getSubtema() { const t = getTema(); return t ? t.subtemas.find(s => s.id === subtemaId) : null; }
+function getConceito() { const s = getSubtema(); return s ? s.conceitos.find(c => c.id === conceitoId) : null; }
+
+function getNoAtual() {
+  const conceito = getConceito();
+  if (conceito) {
+    const t = getTema(), s = getSubtema();
+    return { chave: `descricao:conceito:${t.id}:${s.id}:${conceito.id}`, nome: conceito.nome, descricao: conceito.descricao, filhos: null };
+  }
+  const subtema = getSubtema();
+  if (subtema) {
+    const t = getTema();
+    return { chave: `descricao:subtema:${t.id}:${subtema.id}`, nome: subtema.nome, descricao: subtema.descricao, filhos: { tipo: "conceito", lista: subtema.conceitos } };
+  }
+  const tema = getTema();
+  if (tema) {
+    return { chave: `descricao:tema:${tema.id}`, nome: tema.nome, descricao: tema.descricao, filhos: { tipo: "subtema", lista: tema.subtemas } };
+  }
+  return { chave: `descricao:biologia`, nome: BIOLOGIA_ROOT.nome, descricao: BIOLOGIA_ROOT.descricao, filhos: { tipo: "tema", lista: BIOLOGIA } };
+}
+
+/* =========================================================
+   6) RENDERIZAÇÃO
+   ========================================================= */
+function render() {
+  if (view === "home") return renderHome();
+  if (view === "placeholder") return renderPlaceholder();
+  if (view === "biologia") return renderBiologia();
+}
+
+function renderHome() {
+  app.innerHTML = `
+    <div class="home-header">
+      <h1 class="display">Fichário</h1>
+      <p>Um catálogo de matérias, organizado por gavetas. Abra uma e veja o quanto o assunto se ramifica, do mais geral ao mais específico.</p>
+    </div>
+    <div class="grid">
+      ${SUBJECTS.map(s => `
+        <div class="card" data-id="${s.id}">
+          <span class="tab" style="background:${s.cor}">${s.nome}</span>
+          <div class="icon-row">${s.emoji}</div>
+          <h3>${s.nome}</h3>
+          <p>${s.tagline}</p>
+          ${!s.pronto ? '<span class="status">em breve</span>' : ''}
+        </div>
+      `).join('')}
+    </div>
+  `;
+  app.querySelectorAll(".card").forEach(card => {
+    card.addEventListener("click", () => {
+      const materia = SUBJECTS.find(s => s.id === card.dataset.id);
+      abrirMateria(materia);
+    });
+  });
+}
+
+function renderPlaceholder() {
+  app.innerHTML = `
+    <div class="placeholder-box">
+      <button class="back-link" id="voltar">← voltar ao Fichário</button>
+      <h2 class="display" style="margin-top:24px">${placeholderSubject.nome}</h2>
+      <p>Essa gaveta ainda está sendo organizada. Em breve ela terá o mesmo índice ramificado da Biologia.</p>
+    </div>
+  `;
+  document.getElementById("voltar").addEventListener("click", irParaHome);
+}
+
+function renderBiologia() {
+  const tema = getTema(), subtema = getSubtema(), conceito = getConceito();
+  const noAtual = getNoAtual();
+
+  app.innerHTML = `
+    <div class="top-nav"><button class="back-link" id="voltar">← voltar ao Fichário</button></div>
+
+    <div class="breadcrumbs">
+      <button class="crumb" data-nivel="biologia" style="opacity:${!tema ? 1 : 0.62}; font-weight:${!tema ? 700 : 500}">Biologia</button>
+      ${tema ? `<span class="crumb-sep">/</span><button class="crumb" data-nivel="tema" style="opacity:${!subtema ? 1 : 0.62}; font-weight:${!subtema ? 700 : 500}">${tema.nome}</button>` : ''}
+      ${subtema ? `<span class="crumb-sep">/</span><button class="crumb" data-nivel="subtema" style="opacity:${!conceito ? 1 : 0.62}; font-weight:${!conceito ? 700 : 500}">${subtema.nome}</button>` : ''}
+      ${conceito ? `<span class="crumb-sep">/</span><button class="crumb" data-nivel="conceito" style="font-weight:700">${conceito.nome}</button>` : ''}
+    </div>
+
+    <div class="layout">
+      <div class="panel">
+        <div class="desc-box">
+          <h4>${noAtual.nome}</h4>
+          <textarea id="descricao-texto" placeholder="Escreva aqui o que é ${noAtual.nome}...">${noAtual.descricao || ''}</textarea>
+          <div class="desc-actions">
+            <button class="save-btn" id="salvar-btn">Salvar</button>
+            <span class="save-status" id="save-status"></span>
+          </div>
+        </div>
+        ${noAtual.filhos ? `
+          <h4>${noAtual.filhos.tipo === 'tema' ? 'Temas' : noAtual.filhos.tipo === 'subtema' ? 'Subtemas' : 'Conceitos'} ${noAtual.filhos.tipo !== 'tema' ? 'de ' + noAtual.nome : ''}</h4>
+          <ul class="index-list">
+            ${noAtual.filhos.lista.map(item => `
+              <li><button data-tipo="${noAtual.filhos.tipo}" data-id="${item.id}">${item.nome}</button></li>
+            `).join('')}
+          </ul>
+        ` : ''}
+      </div>
+
+      <div class="tree-panel">
+        <div class="tree">
+          <div class="root-node display" id="tree-root">Biologia</div>
+          <ul>
+            ${BIOLOGIA.map(t => `
+              <li>
+                <div class="node ${temaId === t.id ? 'node-active' : ''} ${temaId && temaId !== t.id ? 'node-dim' : ''}" style="font-size:0.9rem" data-tipo="tema" data-id="${t.id}">${t.nome}</div>
+                ${temaId === t.id ? `
+                  <ul>
+                    ${t.subtemas.map(s => `
+                      <li>
+                        <div class="node ${subtemaId === s.id ? 'node-active' : ''} ${subtemaId && subtemaId !== s.id ? 'node-dim' : ''}" style="font-size:0.8rem" data-tipo="subtema" data-id="${s.id}">${s.nome}</div>
+                        ${subtemaId === s.id ? `
+                          <ul>
+                            ${s.conceitos.map(c => `
+                              <li><div class="node ${conceitoId === c.id ? 'node-active' : ''} ${conceitoId && conceitoId !== c.id ? 'node-dim' : ''}" style="font-size:0.74rem" data-tipo="conceito" data-id="${c.id}">${c.nome}</div></li>
+                            `).join('')}
+                          </ul>
+                        ` : ''}
+                      </li>
+                    `).join('')}
+                  </ul>
+                ` : ''}
+              </li>
+            `).join('')}
+          </ul>
+        </div>
+        <div class="tree-caption">quanto mais fundo o galho, mais específico o conteúdo</div>
+      </div>
+    </div>
+  `;
+
+  // eventos de navegação
+  document.getElementById("voltar").addEventListener("click", irParaHome);
+  app.querySelectorAll(".crumb").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const nivel = btn.dataset.nivel;
+      if (nivel === "biologia") { temaId = null; subtemaId = null; conceitoId = null; }
+      if (nivel === "tema") { subtemaId = null; conceitoId = null; }
+      if (nivel === "subtema") { conceitoId = null; }
+      render();
+    });
+  });
+  app.querySelectorAll("[data-tipo][data-id]").forEach(el => {
+    el.addEventListener("click", () => {
+      const { tipo, id } = el.dataset;
+      if (tipo === "tema") escolherTema(id);
+      if (tipo === "subtema") escolherSubtema(id);
+      if (tipo === "conceito") escolherConceito(id);
+    });
+  });
+  document.getElementById("tree-root").addEventListener("click", () => {
+    temaId = null; subtemaId = null; conceitoId = null; render();
+  });
+
+  // salvar descrição
+  document.getElementById("salvar-btn").addEventListener("click", async () => {
+    const texto = document.getElementById("descricao-texto").value;
+    const status = document.getElementById("save-status");
+    status.textContent = "salvando...";
+    const ok = await salvarDescricao(noAtual.chave, texto);
+    status.textContent = ok ? "salvo ✓" : "não foi possível salvar";
+    setTimeout(() => { status.textContent = ""; }, 2000);
+  });
+
+  // carregar descrição salva anteriormente (se existir)
+  getDescricaoSalva(noAtual.chave).then(salvo => {
+    if (salvo !== null) {
+      const textarea = document.getElementById("descricao-texto");
+      if (textarea) textarea.value = salvo;
+    }
+  });
+}
+
+/* =========================================================
+   7) INÍCIO
+   ========================================================= */
+render();
+</script>
+</body>
+</html>
