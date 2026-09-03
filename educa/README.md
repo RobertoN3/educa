@@ -1,0 +1,3 @@
+Este projeto está sendo feito para exercitar minhas capacidades em html, e também é talvez um projeto base para ver como posso otimizar projetos e produtos voltados para a educação através da tecnologia.
+Além disso, faço ele para rever as matérias que aprendi na escola e reforçá-los e ajudar outras pessoas.
+Comecei ele hoje, dia 02/09/2026, e espero que fique pelo menos claro e aprofundado com minhas anotações e conhecimentos que obtive no Ensino Fundamental e Médio.
