@@ -71,19 +71,7 @@
   .panel h4 { font-family: 'Fraunces', serif; font-size: 1rem; margin: 0 0 4px; font-weight: 600; color: #4a4030; }
 
   .desc-box { margin-bottom: 18px; padding-bottom: 16px; border-bottom: 1px solid #d9cfb4; }
-  .desc-box textarea {
-    width: 100%; min-height: 70px; margin-top: 8px; resize: vertical;
-    font-family: 'IBM Plex Sans'; font-size: 0.87rem; line-height: 1.5;
-    padding: 8px 10px; border: 1px solid #cabe9c; border-radius: 3px;
-    background: #fbf8ee; color: #3a3225;
-  }
-  .desc-actions { display: flex; align-items: center; gap: 10px; margin-top: 6px; }
-  .save-btn {
-    background: var(--green); color: #fff; border: none; border-radius: 3px;
-    padding: 6px 14px; font-size: 0.78rem; cursor: pointer; font-family: 'IBM Plex Sans'; font-weight: 600;
-  }
-  .save-btn:hover { opacity: 0.9; }
-  .save-status { font-size: 0.75rem; color: #6d8f6a; }
+  .desc-box p { margin: 8px 0 0; font-size: 0.87rem; line-height: 1.55; color: #4a4030; }
 
   .index-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
   .index-list li button {
@@ -93,34 +81,30 @@
   .index-list li button:hover { background: var(--paper2); }
   .index-list li button.active { background: var(--green); color: #fff; font-weight: 600; }
 
-  .tree-panel { background: var(--wood2); border-radius: 4px; padding: 26px 18px; overflow-x: auto; }
-  .tree-caption { text-align: center; font-size: 0.72rem; color: #9c8f74; margin-top: 6px; }
+  .tree-panel { background: var(--wood2); border-radius: 4px; padding: 40px 24px; display: flex; flex-direction: column; justify-content: center; min-height: 260px; }
+  .tree-caption { text-align: center; font-size: 0.75rem; color: #9c8f74; margin-top: 22px; line-height: 1.5; }
 
-  .tree, .tree ul { list-style: none; margin: 0; padding: 0; position: relative; }
-  .tree { text-align: center; padding-top: 6px; }
-  .tree ul { padding-top: 26px; }
-  .tree li { display: inline-block; vertical-align: top; padding: 26px 10px 0; position: relative; }
-  .tree li::before, .tree li::after {
-    content: ''; position: absolute; top: 0; right: 50%; border-top: 1px solid #55492f; width: 50%; height: 26px;
+  /* ---------- LINHA ÚNICA DE PROFUNDIDADE ---------- */
+  .depth-line { display: flex; align-items: flex-start; justify-content: center; }
+  .depth-step { display: flex; flex-direction: column; align-items: center; cursor: pointer; }
+  .depth-dot {
+    border-radius: 50%; background: transparent; border: 1.5px solid #6b5f47;
+    transition: all 160ms ease; margin-bottom: 10px;
   }
-  .tree li::after { right: auto; left: 50%; border-left: 1px solid #55492f; }
-  .tree li:only-child::after, .tree li:only-child::before { display: none; }
-  .tree li:only-child { padding-top: 0; }
-  .tree li:first-child::before, .tree li:last-child::after { border: 0 none; }
-  .tree li:last-child::before { border-right: 1px solid #55492f; border-radius: 0 4px 0 0; }
-  .tree li:first-child::after { border-radius: 4px 0 0 0; }
-  .tree ul::before {
-    content: ''; position: absolute; top: 0; left: 50%; border-left: 1px solid #55492f; width: 0; height: 26px;
+  .depth-dot.filled { background: var(--green); border-color: var(--green); }
+  .depth-dot.size-0 { width: 22px; height: 22px; }
+  .depth-dot.size-1 { width: 18px; height: 18px; }
+  .depth-dot.size-2 { width: 14px; height: 14px; }
+  .depth-dot.size-3 { width: 11px; height: 11px; }
+  .depth-step:hover .depth-dot { border-color: #C7BBA0; }
+  .depth-label {
+    font-family: 'Fraunces', serif; font-size: 0.8rem; color: #C7BBA0; text-align: center;
+    max-width: 100px; line-height: 1.3;
   }
-
-  .node {
-    display: inline-block; font-family: 'Fraunces', serif; color: #C7BBA0; cursor: pointer;
-    padding: 6px 12px; border-radius: 3px; white-space: nowrap; transition: opacity 140ms ease;
-  }
-  .node:hover { color: #fff; }
-  .node-active { background: var(--green); color: #fff; font-weight: 600; }
-  .node-dim { opacity: 0.55; }
-  .root-node { font-weight: 700; color: #fff; font-size: 1.15rem; padding-bottom: 4px; cursor: pointer; }
+  .depth-step.is-active .depth-label { color: #fff; font-weight: 600; }
+  .depth-connector { width: 34px; height: 1.5px; background: #55492f; margin: 10px 4px 0; }
+  .depth-connector.filled { background: var(--green); }
+  @media (max-width: 500px) { .depth-connector { width: 16px; } .depth-label { font-size: 0.7rem; max-width: 66px; } }
 
   /* ---------- PLACEHOLDER ---------- */
   .placeholder-box { max-width: 640px; margin: 60px auto; text-align: center; color: #D8CDB2; }
@@ -332,29 +316,6 @@ let conceitoId = null;
 const app = document.getElementById("app");
 
 /* =========================================================
-   3) ARMAZENAMENTO (salva as descrições que você escrever)
-   window.storage é fornecido pelo ambiente do artifact.
-   ========================================================= */
-async function getDescricaoSalva(chave) {
-  if (typeof window.storage === "undefined") return null;
-  try {
-    const resultado = await window.storage.get(chave, false); // false = dado pessoal
-    return resultado ? resultado.value : null;
-  } catch (erro) {
-    return null; // chave ainda não existe
-  }
-}
-async function salvarDescricao(chave, texto) {
-  if (typeof window.storage === "undefined") return false;
-  try {
-    await window.storage.set(chave, texto, false);
-    return true;
-  } catch (erro) {
-    return false;
-  }
-}
-
-/* =========================================================
    4) FUNÇÕES DE NAVEGAÇÃO
    ========================================================= */
 function abrirMateria(materia) {
@@ -412,7 +373,29 @@ function getNoAtual() {
 }
 
 /* =========================================================
-   6) RENDERIZAÇÃO
+   6) LEGENDA DA LINHA DE PROFUNDIDADE
+   Não desenha os "irmãos" (isso é o que sobrecarregava a
+   árvore) — só diz em texto onde ele está: nível X de 4,
+   e a posição dentro da lista de irmãos.
+   ========================================================= */
+function getLegendaProfundidade(tema, subtema, conceito) {
+  if (conceito) {
+    const pos = subtema.conceitos.findIndex(c => c.id === conceito.id) + 1;
+    return `Nível 4 de 4 — conceito ${pos} de ${subtema.conceitos.length} em "${subtema.nome}"`;
+  }
+  if (subtema) {
+    const pos = tema.subtemas.findIndex(s => s.id === subtema.id) + 1;
+    return `Nível 3 de 4 — subtema ${pos} de ${tema.subtemas.length} em "${tema.nome}"`;
+  }
+  if (tema) {
+    const pos = BIOLOGIA.findIndex(t => t.id === tema.id) + 1;
+    return `Nível 2 de 4 — tema ${pos} de ${BIOLOGIA.length} em Biologia`;
+  }
+  return `Nível 1 de 4 — o ponto de partida`;
+}
+
+/* =========================================================
+   7) RENDERIZAÇÃO
    ========================================================= */
 function render() {
   if (view === "home") return renderHome();
@@ -475,11 +458,7 @@ function renderBiologia() {
       <div class="panel">
         <div class="desc-box">
           <h4>${noAtual.nome}</h4>
-          <textarea id="descricao-texto" placeholder="Escreva aqui o que é ${noAtual.nome}...">${noAtual.descricao || ''}</textarea>
-          <div class="desc-actions">
-            <button class="save-btn" id="salvar-btn">Salvar</button>
-            <span class="save-status" id="save-status"></span>
-          </div>
+          <p>${noAtual.descricao}</p>
         </div>
         ${noAtual.filhos ? `
           <h4>${noAtual.filhos.tipo === 'tema' ? 'Temas' : noAtual.filhos.tipo === 'subtema' ? 'Subtemas' : 'Conceitos'} ${noAtual.filhos.tipo !== 'tema' ? 'de ' + noAtual.nome : ''}</h4>
@@ -492,33 +471,31 @@ function renderBiologia() {
       </div>
 
       <div class="tree-panel">
-        <div class="tree">
-          <div class="root-node display" id="tree-root">Biologia</div>
-          <ul>
-            ${BIOLOGIA.map(t => `
-              <li>
-                <div class="node ${temaId === t.id ? 'node-active' : ''} ${temaId && temaId !== t.id ? 'node-dim' : ''}" style="font-size:0.9rem" data-tipo="tema" data-id="${t.id}">${t.nome}</div>
-                ${temaId === t.id ? `
-                  <ul>
-                    ${t.subtemas.map(s => `
-                      <li>
-                        <div class="node ${subtemaId === s.id ? 'node-active' : ''} ${subtemaId && subtemaId !== s.id ? 'node-dim' : ''}" style="font-size:0.8rem" data-tipo="subtema" data-id="${s.id}">${s.nome}</div>
-                        ${subtemaId === s.id ? `
-                          <ul>
-                            ${s.conceitos.map(c => `
-                              <li><div class="node ${conceitoId === c.id ? 'node-active' : ''} ${conceitoId && conceitoId !== c.id ? 'node-dim' : ''}" style="font-size:0.74rem" data-tipo="conceito" data-id="${c.id}">${c.nome}</div></li>
-                            `).join('')}
-                          </ul>
-                        ` : ''}
-                      </li>
-                    `).join('')}
-                  </ul>
-                ` : ''}
-              </li>
-            `).join('')}
-          </ul>
+        <div class="depth-line">
+          <div class="depth-step ${!tema ? 'is-active' : ''}" data-nivel="biologia">
+            <div class="depth-dot size-0 filled"></div>
+            <div class="depth-label">Biologia</div>
+          </div>
+
+          <div class="depth-connector ${tema ? 'filled' : ''}"></div>
+          <div class="depth-step ${tema && !subtema ? 'is-active' : ''}" data-nivel="tema">
+            <div class="depth-dot size-1 ${tema ? 'filled' : ''}"></div>
+            <div class="depth-label">${tema ? tema.nome : 'Tema'}</div>
+          </div>
+
+          <div class="depth-connector ${subtema ? 'filled' : ''}"></div>
+          <div class="depth-step ${subtema && !conceito ? 'is-active' : ''}" data-nivel="subtema">
+            <div class="depth-dot size-2 ${subtema ? 'filled' : ''}"></div>
+            <div class="depth-label">${subtema ? subtema.nome : 'Subtema'}</div>
+          </div>
+
+          <div class="depth-connector ${conceito ? 'filled' : ''}"></div>
+          <div class="depth-step ${conceito ? 'is-active' : ''}" data-nivel="conceito">
+            <div class="depth-dot size-3 ${conceito ? 'filled' : ''}"></div>
+            <div class="depth-label">${conceito ? conceito.nome : 'Conceito'}</div>
+          </div>
         </div>
-        <div class="tree-caption">quanto mais fundo o galho, mais específico o conteúdo</div>
+        <div class="tree-caption">${getLegendaProfundidade(tema, subtema, conceito)}</div>
       </div>
     </div>
   `;
@@ -542,31 +519,20 @@ function renderBiologia() {
       if (tipo === "conceito") escolherConceito(id);
     });
   });
-  document.getElementById("tree-root").addEventListener("click", () => {
-    temaId = null; subtemaId = null; conceitoId = null; render();
+  app.querySelectorAll(".depth-step").forEach(step => {
+    step.addEventListener("click", () => {
+      const nivel = step.dataset.nivel;
+      if (nivel === "biologia") { temaId = null; subtemaId = null; conceitoId = null; }
+      if (nivel === "tema" && tema) { subtemaId = null; conceitoId = null; }
+      if (nivel === "subtema" && subtema) { conceitoId = null; }
+      render();
+    });
   });
 
-  // salvar descrição
-  document.getElementById("salvar-btn").addEventListener("click", async () => {
-    const texto = document.getElementById("descricao-texto").value;
-    const status = document.getElementById("save-status");
-    status.textContent = "salvando...";
-    const ok = await salvarDescricao(noAtual.chave, texto);
-    status.textContent = ok ? "salvo ✓" : "não foi possível salvar";
-    setTimeout(() => { status.textContent = ""; }, 2000);
-  });
-
-  // carregar descrição salva anteriormente (se existir)
-  getDescricaoSalva(noAtual.chave).then(salvo => {
-    if (salvo !== null) {
-      const textarea = document.getElementById("descricao-texto");
-      if (textarea) textarea.value = salvo;
-    }
-  });
 }
 
 /* =========================================================
-   7) INÍCIO
+   8) INÍCIO
    ========================================================= */
 render();
 </script>
